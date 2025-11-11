@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Profile — Venda Valley Engineering</title>
+  <script>
+    tailwind = { config: { theme: { extend: {
+      colors: { vvblack:'#0b0b0b', vvdark:'#111827', vvsilver:'#BFC7CC', vvyellow:'#FFD400', vvblue:'#00A3FF' }
+    }}}}
+  </script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="main.css">
+</head>
+<body class="bg-vvblack text-white">
+
+  <!-- NAV -->
+  <header class="fixed top-0 left-0 right-0 z-40 nav-glass">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6">
+      <div class="flex items-center justify-between h-16">
+        <div class="flex items-center gap-3">
+
+          <a href="main_home.html" class="flex items-center gap-3 ml-2">
+            <div class="w-10 h-10 rounded-md bg-gradient-to-br from-vvblue to-yellow-300 flex items-center justify-center">
+              <img src="logo.png" alt="Venda Valley Engineering Logo" class="h-12 w-12 object-contain" > 
+            </div>
+            <div class="brand-text">
+              <div class="text-sm font-bold tracking-wide">Venda Valley</div>
+              <div class="text-xs text-vvsilver -mt-1">Engineering</div>
+            </div>
+          </a>
+        </div>
+
+        <nav class="hidden md:flex items-center gap-6">
+          <a href="main_home.html" class="text-sm hover:text-vvblue">Home</a>
+          <a href="services.html" class="text-sm hover:text-vvblue">Services</a>
+          <a href="about.html" class="text-sm hover:text-vvblue">About Us</a>
+          <a href="book.html" class="text-sm hover:text-vvblue">Book a Service</a>
+          <a href="contact.html" class="text-sm hover:text-vvblue">Contact Us</a>
+          <a href="signup.html" class="ml-3 px-3 py-1 rounded-md cta-yellow text-sm font-semibold">Sign Up</a>
+        </nav>
+
+        <div class="md:hidden">
+          <button id="hamburgerBtn" onclick="toggleMenu()" class="p-2 rounded-md border border-transparent hover:bg-white/5">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8h16M4 16h16"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div id="mobileMenu" class="md:hidden hidden px-4 pb-4">
+      <a href="main_home.html" class="block py-2">Home</a>
+      <a href="services.html" class="block py-2">Services</a>
+      <a href="about.html" class="block py-2">About Us</a>
+      <a href="book.html" class="block py-2">Book a Service</a>
+      <a href="contact.html" class="block py-2">Contact Us</a>
+      <a href="signup.html" class="block mt-2 py-2 px-3 rounded-md cta-yellow text-center font-semibold">Sign Up</a>
+    </div>
+  </header>
+
+  <main class="pt-24 max-w-4xl mx-auto px-6 py-12">
+    <div class="flex flex-col md:flex-row gap-6">
+      <!-- left: profile -->
+      <div class="w-full md:w-1/3 p-6 bg-gradient-to-br from-white/2 to-transparent rounded-lg border border-vvsilver/6">
+        <div class="flex flex-col items-center gap-4">
+          <img id="profilePicPreview" src="profile1.png" alt="avatar" class="w-32 h-32 rounded-full object-cover border border-vvsilver/8">
+          <div class="text-center">
+            <div class="font-semibold">John Doe</div>
+            <div class="text-sm text-vvsilver">Member since 2025</div>
+          </div>
+
+          <label class="mt-2 w-full">
+            <div class="text-sm text-vvsilver">Upload profile picture</div>
+            <input type="file" accept="image/*" onchange="handleProfilePicPreview(this)" class="mt-2 w-full text-sm file:rounded file:bg-vvblue file:text-white file:px-3 file:py-1 file:border-0" />
+          </label>
+        </div>
+
+        <div class="mt-6">
+          <h4 class="text-sm font-semibold">Notifications</h4>
+          <ul class="mt-2 text-sm text-vvsilver space-y-2">
+            <li class="p-2 bg-yellow-900/6 rounded-md border border-yellow-800/6">No new notifications</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- right: details -->
+      <div class="w-full md:w-2/3 p-6 bg-gradient-to-br from-white/2 to-transparent rounded-lg border border-vvsilver/6">
+        <h2 class="text-xl font-semibold">Profile Details</h2>
+        <div id="profileMessage" class="mt-3"></div>
+        <form id="profileForm" onsubmit="handleProfileSave(event)" class="mt-4 space-y-3">
+          <div>
+            <label class="text-sm text-vvsilver">Full name</label>
+            <input name="fullname" class="mt-1 w-full p-3 rounded-md input-vv" value="John Doe" />
+          </div>
+          <div>
+            <label class="text-sm text-vvsilver">Email</label>
+            <input name="email" class="mt-1 w-full p-3 rounded-md input-vv" value="john.doe@example.com" />
+          </div>
+          <div>
+            <label class="text-sm text-vvsilver">Phone</label>
+            <input name="phone" class="mt-1 w-full p-3 rounded-md input-vv" value="+27 7x xxx xxxx" />
+          </div>
+
+          <div class="flex items-center gap-3">
+            <button type="submit" class="px-4 py-2 cta-yellow rounded-md font-semibold">Save Changes</button>
+            <a href="book.html" class="text-vvsilver">My Bookings</a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </main>
+
+<!-- FOOTER -->
+<footer class="bg-vvdark text-white/80 mt-12">
+  <div class="max-w-7xl mx-auto px-6 py-8 grid grid-cols-1 md:grid-cols-4 gap-8">
+
+    <!-- Column 1: Company Info -->
+    <div>
+      <h3 class="text-yellow-400 font-semibold mb-3">Venda Valley Engineering</h3>
+      <p class="text-sm mb-2">Office: Venda Valley, Limpopo</p>
+      <p class="text-sm mb-2">Phone: +27 11 365 6349</p>
+      <p class="text-sm mb-4">Email: info@vendavalley.co.za</p>
+      <p class="text-xs text-vvsilver">© <span id="year"></span> Venda Valley Engineering. All rights reserved.</p>
+    </div>
+
+    <!-- Column 2: Social Media -->
+    <div>
+      <h3 class="text-yellow-400 font-semibold mb-3">Follow Us</h3>
+      <ul class="space-y-2 text-sm">
+        <li><a href="https://instagram.com/vendavalleyengineering_official" target="_blank" class="flex items-center hover:text-vvblue">
+          <img src="icons/instagram.png" alt="Instagram" class="w-5 h-5 mr-2"> Instagram:vendavalleyengineering_official
+        </a></li>
+        <li><a href="https://x.com/officialvendavalley_engineering" target="_blank" class="flex items-center hover:text-vvblue">
+          <img src="icons/twitter.png" alt="X" class="w-5 h-5 mr-2"> X/Twitter:officialvendavalley_engineering
+        </a></li>
+        <li><a href="https://tiktok.com/@vendavalleyengineering_official" target="_blank" class="flex items-center hover:text-vvblue">
+          <img src="icons/tik-tok.png" alt="TikTok" class="w-5 h-5 mr-2"> TikTok:vendavalleyengineering_official
+        </a></li>
+        <li><a href="https://linkedin.com/company/VendaValleyEngineering" target="_blank" class="flex items-center hover:text-vvblue">
+          <img src="icons/linkedin.png" alt="LinkedIn" class="w-5 h-5 mr-2"> Linkedin:VendaValleyEngineering
+        </a></li>
+        <li><a href="https://facebook.com/vendavalleyengineering_official" target="_blank" class="flex items-center hover:text-vvblue">
+          <img src="icons/communication.png" alt="Facebook" class="w-5 h-5 mr-2"> Facebook:vendavalleyengineering_official
+        </a></li>
+      </ul>
+    </div>
+
+    <!-- Column 3: Policies & Goals -->
+    <div>
+      <h3 class="text-yellow-400 font-semibold mb-3">Company</h3>
+      <ul class="space-y-2 text-sm">
+        <li><a href="privacy-policy.html" class="hover:text-vvblue">Privacy Policy</a></li>
+        <li><a href="terms.html" class="hover:text-vvblue">Terms of Use</a></li>
+      </ul>
+      <h3 class="text-yellow-400 font-semibold mt-5 mb-2">Our Goals</h3>
+      <p class="text-sm text-vvsilver leading-relaxed">
+        To provide innovative, reliable, and sustainable engineering solutions across South Africa — empowering communities through technology and energy efficiency.
+      </p>
+    </div>
+
+    <!-- Column 4: App Download -->
+    <div class="flex flex-col items-start md:items-start">
+      <h3 class="text-yellow-400 font-semibold mb-3">Download Our App</h3>
+      <div class="flex flex-wrap gap-4">
+        <a href="download-app.html">
+          <img src="badges/[CITYPNG.COM]HD Get It On Google Play Button Transparent PNG - 4500x4500.png"
+               alt="Playstore"
+               class="h-24 md:h-28 w-auto transition-transform hover:scale-105">
+        </a>
+        <a href="download-app.html">
+          <img src="badges/[CITYPNG.COM]FREE Available On The App Store Apple Button PNG - 1500x1500.png"
+               alt="Appstore"
+               class="h-24 md:h-28 w-auto transition-transform hover:scale-105">
+        </a>
+      </div>
+    </div>
+
+  </div>
+</footer>
+
+<script>
+  document.getElementById('year').textContent = new Date().getFullYear();
+</script>
+
+
+<script>
+  // Set dynamic year
+  document.getElementById("year").textContent = new Date().getFullYear();
+</script>
+
+
+  <script>document.getElementById('year8').textContent = new Date().getFullYear();</script>
+  <script src="main.js" defer></script>
+</body>
+</html>

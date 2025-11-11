@@ -1,0 +1,141 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // =========================================================================
+    // HELPER FUNCTIONS
+    // =========================================================================
+
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    // New helper to check if the user is a participant based on the CHAT ID string structure
+    // Format: [UID1]_[UID2]_[JOBID]
+    function isChatParticipant(userId, chatId) {
+      // Splits the ID and checks if the requesting UID matches the first or second UID segment
+      return chatId.split('_')[0] == userId || chatId.split('_')[1] == userId;
+    }
+
+    function getUserRole() {
+      // NOTE: .data is crucial when retrieving the document to get the fields
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role;
+    }
+
+    function isCustomer() {
+      return isAuthenticated() && getUserRole() == 'customer';
+    }
+    function isTechnician() {
+      return isAuthenticated() && getUserRole() == 'technician';
+    }
+    function isAdmin() {
+      return isAuthenticated() && getUserRole() == 'admin';
+    }
+
+
+    // =========================================================================
+    // 1. /users Collection (Profile Data)
+    // =========================================================================
+    match /users/{userId} {
+      // Allow any authenticated user to read any user's public profile data (e.g., name, role)
+      allow read: if isAuthenticated();
+      // Allow write/update only to the user's own document (used by EditProfileActivity)
+      allow write: if isAuthenticated() && request.auth.uid == userId;
+      // Creation rule for new registrations
+      allow create: if request.resource.data.keys().hasAll(['role', 'email']);
+      allow delete: if false;
+    }
+
+
+    // =========================================================================
+    // 2. /jobs Collection (Service Bookings and Assignment)
+    // =========================================================================
+    match /jobs/{jobId} {
+      // ADMIN access: Can do anything
+      allow write: if isAdmin();
+      
+      // READ access: Defined by user role
+      allow read: if (isCustomer() && resource.data.customer_uid == request.auth.uid) ||
+                    (isTechnician() && resource.data.assigned_technician_uid == request.auth.uid) ||
+                    isAdmin(); 
+
+      // CUSTOMER create access: Must be a customer, own the job, and enforce initial fields
+      allow create: if isCustomer() 
+                    && request.auth.uid == request.resource.data.customer_uid
+                    // Enforce presence of ALL required fields from the client submission
+                    && request.resource.data.keys().hasAll([
+                        'service_type', 
+                        'description', 
+                        'location_address',
+                        'customer_name', 
+                        'customer_email',
+                        'status', 
+                        'customer_uid',
+                        'booking_date',      // Enforced date from form
+                        'assigned_technician_uid' // Enforced assignment placeholder
+                    ])
+                    // Ensure initial status is 'Pending'
+                    && request.resource.data.status == 'Pending'
+                    // Ensure assignment field is null on creation
+                    && request.resource.data.assigned_technician_uid == null
+                    // Prevent client from setting the server-side created_at timestamp
+                    && !('created_at' in request.resource.data); 
+
+      // TECHNICIAN update access: Can update status, report fields, etc. on assigned jobs only
+      allow update: if isTechnician() && resource.data.assigned_technician_uid == request.auth.uid;
+                      
+      allow delete: if false;
+    }
+
+
+    // =========================================================================
+    // 3. /chats Collection (The Chat Inbox and Messages)
+    // =========================================================================
+    match /chats/{chatId} {
+      // Allow read/write only if the requesting user is one of the two UIDs in the chatId string
+      allow read, write: if isChatParticipant(request.auth.uid, chatId);
+
+      // -----------------------------------------------------------------------
+      // 3a. /chats/{chatId}/messages Subcollection
+      // -----------------------------------------------------------------------
+      match /messages/{messageId} {
+        // Allow read/write only if the requesting user is a participant of the parent chat
+        allow read: if isChatParticipant(request.auth.uid, chatId);
+        
+        // Creation rules: must be a participant AND the senderId must match the authenticated UID
+        allow create: if isChatParticipant(request.auth.uid, chatId)
+                      && request.resource.data.senderId == request.auth.uid
+                      && request.resource.data.keys().hasAll([
+                          'senderId',
+                          'messageText',
+                          'timestamp' 
+                      ]);
+        
+        // Prevent all updates and deletions
+        allow update, delete: if false;
+      }
+    }
+
+
+    // ==========================================================
+    // 4. /reports Collection (Technician Submission)
+    // ==========================================================
+    match /reports/{reportId} {
+      // Only technicians can create reports
+      allow create: if isTechnician();
+      // Admin can read all reports; Technician can only read their own reports
+      allow read: if isAdmin() || (isTechnician() && resource.data.technicianUid == request.auth.uid);
+      // Only Admin can update/delete reports
+      allow update: if isAdmin();
+      allow delete: if isAdmin();
+    }
+
+
+    // ==========================================================
+    // 5. Default Rule: Secure Catch-All
+    // ==========================================================
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

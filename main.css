@@ -1,0 +1,45 @@
+:root{
+  --vv-black: #0b0b0b;
+  --vv-dark: #111827;
+  --vv-silver: #BFC7CC;
+  --vv-yellow: #FFD400;
+  --vv-blue: #00A3FF;
+}
+
+/* small reset tweaks */
+body { background: var(--vv-black); color: #fff; font-synthesis: none; -webkit-font-smoothing:antialiased; }
+
+/* sticky nav shadow */
+.nav-glass { backdrop-filter: blur(6px); background: linear-gradient(180deg, rgba(11,11,11,0.9), rgba(11,11,11,0.6)); }
+
+/* yellow CTA glow */
+.cta-yellow {
+  background: linear-gradient(90deg,var(--vv-yellow),#FFC600);
+  color: #111827;
+  box-shadow: 0 6px 18px rgba(255,212,0,0.12);
+}
+.cta-yellow:hover {
+  filter: brightness(1.03);
+  box-shadow: 0 10px 30px rgba(255,212,0,0.22), 0 0 20px rgba(255,212,0,0.08) inset;
+}
+
+/* electric-blue backgrounds */
+.bg-electric { background: linear-gradient(90deg, rgba(0,163,255,0.08), rgba(0,163,255,0.03)); border: 1px solid rgba(0,163,255,0.08); }
+
+/* silver divider */
+.hr-silver { height: 1px; background: linear-gradient(90deg, transparent, var(--vv-silver), transparent); opacity: 0.35; }
+
+/* profile image placeholder */
+.avatar-placeholder { background: linear-gradient(135deg,#111827,#1f2937); display: inline-flex; align-items:center; justify-content:center; }
+
+/* form inputs style for contrast */
+.input-vv {
+  background: rgba(255,255,255,0.02);
+  border:1px solid rgba(191,199,204,0.06);
+  color: #fff;
+}
+
+/* small responsive tweaks */
+@media (max-width:640px){
+  .brand-text { font-size: 1.05rem; }
+}

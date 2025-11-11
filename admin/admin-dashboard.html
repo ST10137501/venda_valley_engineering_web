@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard | Venda Valley Engineering</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="text-white min-h-screen"
+      style="background-image: url('web.jpg'); background-size: cover; background-position: center; background-attachment: fixed;">
+  <div class="bg-black bg-opacity-80 min-h-screen">
+    <nav class="bg-gray-900 bg-opacity-90 p-4 flex justify-between items-center sticky top-0">
+      <div class="flex items-center space-x-3">
+        <img src="logo.png" alt="Venda Valley Engineering Logo" class="h-12 w-12 object-contain">
+        <h1 class="text-xl font-bold text-yellow-400">Admin Dashboard</h1>
+      </div>
+      <button id="logoutBtn" class="bg-yellow-500 text-black px-4 py-2 rounded hover:bg-yellow-600 font-semibold">Logout</button>
+    </nav>
+
+    <div class="p-6 space-x-4 flex justify-center">
+      <button class="tab-btn bg-gray-800 px-4 py-2 rounded hover:bg-blue-600" data-tab="bookings">Bookings</button>
+      <button class="tab-btn bg-gray-800 px-4 py-2 rounded hover:bg-blue-600" data-tab="users">Users</button>
+      <button class="tab-btn bg-gray-800 px-4 py-2 rounded hover:bg-blue-600" data-tab="messages">Messages</button>
+    </div>
+
+    <div id="tabContent" class="p-6 text-gray-200">
+      <!-- BOOKINGS -->
+      <div id="bookings" class="tab hidden">
+        <h2 class="text-yellow-400 text-xl mb-4 font-semibold">Bookings (<span id="bookingCount">0</span>)</h2>
+        <table class="min-w-full bg-gray-800 rounded bg-opacity-80">
+          <thead>
+            <tr class="bg-gray-700">
+              <th class="p-3">Name</th>
+              <th class="p-3">Service</th>
+              <th class="p-3">Date</th>
+              <th class="p-3">Status</th>
+              <th class="p-3">Action</th>
+            </tr>
+          </thead>
+          <tbody id="bookingTable" class="text-center"></tbody>
+        </table>
+      </div>
+
+      <!-- USERS -->
+      <div id="users" class="tab hidden">
+        <h2 class="text-yellow-400 text-xl mb-4 font-semibold">Users</h2>
+        <table class="min-w-full bg-gray-800 rounded bg-opacity-80">
+          <thead>
+            <tr class="bg-gray-700">
+              <th class="p-3">Name</th>
+              <th class="p-3">Email</th>
+              <th class="p-3">Status</th>
+              <th class="p-3">Action</th>
+            </tr>
+          </thead>
+          <tbody id="userTable" class="text-center"></tbody>
+        </table>
+      </div>
+
+      <!-- MESSAGES -->
+      <div id="messages" class="tab hidden">
+        <h2 class="text-yellow-400 text-xl mb-4 font-semibold">Messages</h2>
+        <div id="messageList" class="space-y-4"></div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-app.js";
+    import { getAuth, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-auth.js";
+    import { getFirestore, collection, getDocs, updateDoc, doc } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyAj4ThnbGjG9FVbPWUEgAcGPVPK8M1oN5E",
+      authDomain: "venda-valley-engineering.firebaseapp.com",
+      projectId: "venda-valley-engineering",
+      storageBucket: "venda-valley-engineering.firebasestorage.app",
+      messagingSenderId: "651587110969",
+      appId: "1:651587110969:web:3a6726f3f67823106e25e8",
+      measurementId: "G-BVE1GXQWY5"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    // Protect admin page
+    onAuthStateChanged(auth, async (user) => {
+      if (!user || user.uid !== "MvlYNJyu4OX0SLZQbkHPZRweeFl2" || localStorage.getItem('isAdminLoggedIn') !== 'true') {
+        window.location.href = 'admin-login.html';
+      } else {
+        // Load data after auth confirmed
+        await loadBookings();
+        await loadUsers();
+        await loadMessages();
+      }
+    });
+
+    // Log out
+    document.getElementById('logoutBtn').addEventListener('click', async () => {
+      await signOut(auth);
+      localStorage.removeItem('isAdminLoggedIn');
+      localStorage.removeItem('adminUID');
+      window.location.href = 'admin-login.html';
+    });
+
+    async function loadBookings() {
+      const tbl = document.getElementById('bookingTable');
+      const countSpan = document.getElementById('bookingCount');
+      const snapshot = await getDocs(collection(db, "bookings"));
+      countSpan.textContent = snapshot.size;
+      snapshot.forEach(docSnap => {
+        const data = docSnap.data();
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td class="p-3">${data.name}</td>
+          <td class="p-3">${data.service}</td>
+          <td class="p-3">${data.date}</td>
+          <td class="p-3">${data.status}</td>
+          <td class="p-3">
+            <button class="approve bg-green-500 px-2 py-1 rounded hover:bg-green-600" data-id="${docSnap.id}">Approve</button>
+          </td>
+        `;
+        tbl.appendChild(row);
+      });
+
+      document.body.addEventListener('click', async (e) => {
+        if (e.target.classList.contains('approve')) {
+          const id = e.target.dataset.id;
+          await updateDoc(doc(db, "bookings", id), { status: "Approved" });
+          e.target.closest('tr').querySelector('td:nth-child(4)').textContent = "Approved";
+        }
+      });
+    }
+
+    async function loadUsers() {
+      const tbl = document.getElementById('userTable');
+      const snapshot = await getDocs(collection(db, "users"));
+      snapshot.forEach(docSnap => {
+        const data = docSnap.data();
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td class="p-3">${data.name || "Unknown"}</td>
+          <td class="p-3">${data.email}</td>
+          <td class="p-3">${data.active ? "Active" : "Inactive"}</td>
+          <td class="p-3">
+            <button class="toggleUser bg-blue-500 px-2 py-1 rounded hover:bg-blue-600" data-id="${docSnap.id}">
+              ${data.active ? "Deactivate" : "Activate"}
+            </button>
+          </td>
+        `;
+        tbl.appendChild(row);
+      });
+
+      document.body.addEventListener('click', async (e) => {
+        if (e.target.classList.contains('toggleUser')) {
+          const id = e.target.dataset.id;
+          const currentState = e.target.textContent === "Deactivate";
+          await updateDoc(doc(db, "users", id), { active: !currentState });
+          e.target.textContent = currentState ? "Activate" : "Deactivate";
+          e.target.closest('tr').querySelector('td:nth-child(3)').textContent = currentState ? "Inactive" : "Active";
+        }
+      });
+    }
+
+    async function loadMessages() {
+      const list = document.getElementById('messageList');
+      const snapshot = await getDocs(collection(db, "messages"));
+      snapshot.forEach(docSnap => {
+        const data = docSnap.data();
+        const div = document.createElement('div');
+        div.classList.add("bg-gray-800", "p-4", "rounded", "border", "border-gray-700");
+        div.innerHTML = `
+          <p><strong>Name:</strong> ${data.name}</p>
+          <p><strong>Email:</strong> ${data.email}</p>
+          <p><strong>Message:</strong> ${data.message}</p>
+          <textarea class="replyInput w-full bg-gray-700 mt-2 p-2 rounded" placeholder="Reply..."></textarea>
+          <button class="sendReply bg-yellow-500 text-black mt-2 px-3 py-1 rounded" data-email="${data.email}">Send Reply</button>
+        `;
+        list.appendChild(div);
+      });
+
+      document.body.addEventListener('click', (e) => {
+        if (e.target.classList.contains('sendReply')) {
+          const email = e.target.dataset.email;
+          const replyText = e.target.previousElementSibling.value.trim();
+          if (!replyText) {
+            alert("Enter a reply first.");
+            return;
+          }
+          // Placeholder: actual email logic to implement via backend/Cloud Function
+          alert(`Reply sent to ${email}: ${replyText}`);
+          e.target.previousElementSibling.value = "";
+        }
+      });
+    }
+
+    // Tab switching
+    const tabButtons = document.querySelectorAll('.tab-btn');
+    const tabs = document.querySelectorAll('.tab');
+
+    tabButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        tabs.forEach(tab => tab.classList.add('hidden'));
+        document.getElementById(btn.dataset.tab).classList.remove('hidden');
+      });
+    });
+    // Default show bookings tab
+    document.getElementById('bookings').classList.remove('hidden');
+  </script>
+</body>
+</html>

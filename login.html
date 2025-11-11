@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Login — Venda Valley Engineering</title>
+  <script>
+    tailwind = { config: { theme: { extend: {
+      colors: { vvblack:'#0b0b0b', vvdark:'#111827', vvsilver:'#BFC7CC', vvyellow:'#FFD400', vvblue:'#00A3FF' }
+    }}}}
+  </script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="main.css">
+</head>
+<body class="bg-vvblack text-white">
+
+  <!-- HEADER -->
+  <header class="fixed top-0 left-0 right-0 z-40 nav-glass">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6">
+      <div class="flex items-center justify-between h-16">
+        <a href="main_home.html" class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-md bg-gradient-to-br from-vvblue to-yellow-300 flex items-center justify-center"></div>
+          <img src="logo.png" alt="Venda Valley Engineering Logo" class="h-12 w-12 object-contain"> 
+          <div class="brand-text">
+            <div class="text-sm font-bold tracking-wide">Venda Valley</div>
+            <div class="text-xs text-vvsilver -mt-1">Engineering</div>
+          </div>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN -->
+  <main class="pt-24 max-w-md mx-auto px-6 py-12">
+    <h1 class="text-2xl font-bold">Welcome back</h1>
+    <p class="text-vvsilver mt-2">Log in to manage bookings and your profile.</p>
+
+    <form id="loginForm" class="mt-6 space-y-4">
+      <input class="w-full p-3 rounded-md input-vv" required placeholder="Email" type="email" name="email" />
+      <input class="w-full p-3 rounded-md input-vv" required placeholder="Password" type="password" name="password" />
+      <div class="flex items-center justify-between text-sm">
+        <div class="flex items-center gap-4">
+          <a href="signup.html" class="text-vvsilver hover:text-vvblue">Create account</a>
+          <a href="reset-password.html" class="text-vvsilver hover:text-vvblue">Forgot Password?</a>
+        </div>
+        <button type="submit" class="px-4 py-2 cta-yellow rounded-md font-semibold bg-vvyellow text-black hover:brightness-110">Login</button>
+      </div>
+    </form>
+  </main>
+
+<!-- FOOTER -->
+<footer class="bg-vvdark text-white/80 mt-12">
+  <div class="max-w-7xl mx-auto px-6 py-8 grid grid-cols-1 md:grid-cols-4 gap-8">
+    <div>
+      <h3 class="text-yellow-400 font-semibold mb-3">Venda Valley Engineering</h3>
+      <p class="text-sm mb-2">Office: Venda Valley, Limpopo</p>
+      <p class="text-sm mb-2">Phone: +27 11 365 6349</p>
+      <p class="text-sm mb-4">Email: info@vendavalley.co.za</p>
+      <p class="text-xs text-vvsilver">© <span id="year"></span> Venda Valley Engineering. All rights reserved.</p>
+    </div>
+
+    <div>
+      <h3 class="text-yellow-400 font-semibold mb-3">Follow Us</h3>
+      <ul class="space-y-2 text-sm">
+        <li><a href="https://instagram.com/vendavalleyengineering_official" target="_blank" class="flex items-center hover:text-vvblue">
+          <img src="icons/instagram.png" alt="Instagram" class="w-5 h-5 mr-2"> Instagram:vendavalleyengineering_official
+        </a></li>
+        <li><a href="https://x.com/officialvendavalley_engineering" target="_blank" class="flex items-center hover:text-vvblue">
+          <img src="icons/twitter.png" alt="X" class="w-5 h-5 mr-2"> X/Twitter:officialvendavalley_engineering
+        </a></li>
+        <li><a href="https://tiktok.com/@vendavalleyengineering_official" target="_blank" class="flex items-center hover:text-vvblue">
+          <img src="icons/tik-tok.png" alt="TikTok" class="w-5 h-5 mr-2"> TikTok:vendavalleyengineering_official
+        </a></li>
+        <li><a href="https://linkedin.com/company/VendaValleyEngineering" target="_blank" class="flex items-center hover:text-vvblue">
+          <img src="icons/linkedin.png" alt="LinkedIn" class="w-5 h-5 mr-2"> Linkedin:VendaValleyEngineering
+        </a></li>
+        <li><a href="https://facebook.com/vendavalleyengineering_official" target="_blank" class="flex items-center hover:text-vvblue">
+          <img src="icons/communication.png" alt="Facebook" class="w-5 h-5 mr-2"> Facebook:vendavalleyengineering_official
+        </a></li>
+      </ul>
+    </div>
+
+    <div>
+      <h3 class="text-yellow-400 font-semibold mb-3">Company</h3>
+      <ul class="space-y-2 text-sm">
+        <li><a href="privacy-policy.html" class="hover:text-vvblue">Privacy Policy</a></li>
+        <li><a href="terms.html" class="hover:text-vvblue">Terms of Use</a></li>
+      </ul>
+      <h3 class="text-yellow-400 font-semibold mt-5 mb-2">Our Goals</h3>
+      <p class="text-sm text-vvsilver leading-relaxed">
+        To provide innovative, reliable, and sustainable engineering solutions across South Africa — empowering communities through technology and energy efficiency.
+      </p>
+    </div>
+  </div>
+</footer>
+
+<script>
+  document.getElementById("year").textContent = new Date().getFullYear();
+</script>
+
+<script>
+  document.getElementById('year').textContent = new Date().getFullYear();
+</script>
+
+<!-- ✅ Firebase Login -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-app.js";
+  import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-auth.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyAj4ThnbGjG9FVbPWUEgAcGPVPK8M1oN5E",
+    authDomain: "venda-valley-engineering.firebaseapp.com",
+    projectId: "venda-valley-engineering",
+    storageBucket: "venda-valley-engineering.firebasestorage.app",
+    messagingSenderId: "651587110969",
+    appId: "1:651587110969:web:3a6726f3f67823106e25e8"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+
+  const form = document.getElementById('loginForm');
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const email = form.email.value.trim();
+    const password = form.password.value.trim();
+
+    try {
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      alert(`✅ Welcome back, ${userCredential.user.displayName || 'User'}!`);
+      window.location.href = 'main_home.html';
+    } catch (error) {
+      alert(`❌ ${error.message}`);
+    }
+  });
+</script>
+</body>
+</html>

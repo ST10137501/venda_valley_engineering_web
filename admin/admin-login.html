@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Login | Venda Valley Engineering</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="text-white flex items-center justify-center min-h-screen"
+      style="background-image: url('web.jpg'); background-size: cover; background-position: center;">
+  <div class="bg-black bg-opacity-70 p-8 rounded-lg shadow-lg w-96 border border-gray-700">
+    <div class="flex items-center justify-center mb-6 space-x-3">
+      <img src="logo.png" alt="Venda Valley Engineering Logo" class="h-12 w-12 object-contain">
+      <h1 class="text-2xl font-bold text-yellow-400">Admin Login</h1>
+    </div>
+
+    <form id="adminLoginForm" class="space-y-4">
+      <input type="email" id="adminEmail" placeholder="Email"
+        class="w-full px-4 py-2 bg-gray-800 text-white border border-gray-700 rounded focus:ring-2 focus:ring-yellow-400" required>
+
+      <input type="password" id="adminPassword" placeholder="Password"
+        class="w-full px-4 py-2 bg-gray-800 text-white border border-gray-700 rounded focus:ring-2 focus:ring-yellow-400" required>
+
+      <button type="submit"
+        class="w-full bg-yellow-500 hover:bg-yellow-600 text-black font-bold py-2 rounded transition">Login</button>
+    </form>
+
+    <p id="errorMessage" class="text-red-500 text-center mt-4 hidden">Invalid credentials</p>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-app.js";
+    import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyAj4ThnbGjG9FVbPWUEgAcGPVPK8M1oN5E",
+      authDomain: "venda-valley-engineering.firebaseapp.com",
+      projectId: "venda-valley-engineering",
+      storageBucket: "venda-valley-engineering.firebasestorage.app",
+      messagingSenderId: "651587110969",
+      appId: "1:651587110969:web:3a6726f3f67823106e25e8",
+      measurementId: "G-BVE1GXQWY5"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    const form = document.getElementById('adminLoginForm');
+    const errorMessage = document.getElementById('errorMessage');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = document.getElementById('adminEmail').value.trim();
+      const password = document.getElementById('adminPassword').value.trim();
+
+      try {
+        const userCredential = await signInWithEmailAndPassword(auth, email, password);
+        const user = userCredential.user;
+        // Only allow specific admin UID
+        if (user.uid === "MvlYNJyu4OX0SLZQbkHPZRweeFl2") {
+          localStorage.setItem('isAdminLoggedIn', 'true');
+          localStorage.setItem('adminUID', user.uid);
+          window.location.href = 'admin-dashboard.html';
+        } else {
+          await auth.signOut();
+          throw new Error("Not authorized as admin");
+        }
+      } catch (err) {
+        errorMessage.classList.remove('hidden');
+      }
+    });
+  </script>
+</body>
+</html>
+  

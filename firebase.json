@@ -1,0 +1,22 @@
+{
+  "firestore": {
+    "database": "(default)",
+    "location": "africa-south1",
+    "rules": "venda_valley_engineering_web",
+    "indexes": "firestore.indexes.json"
+    
+  },
+  "hosting": {
+    "public": " venda_valley_engineering_web",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ]
+  },
+  "storage": {
+    "rules": "storage.rules"
+  }
+  
+  
+}
